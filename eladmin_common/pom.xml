@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.pubo</groupId>
+		<artifactId>eladmin_back</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.pubo</groupId>
+	<artifactId>eladmin_common</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>eladmin_common</name>
+	<description>eladmin_common</description>
+
+	<properties>
+		<hutool.version>5.8.20</hutool.version>
+	</properties>
+
+	<dependencies>
+		<!--工具包-->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>${hutool.version}</version>
+		</dependency>
+	</dependencies>
+
+
+
+</project>

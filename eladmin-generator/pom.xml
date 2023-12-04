@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.pubo</groupId>
+		<artifactId>eladmin_back</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.pubo</groupId>
+	<artifactId>eladmin-generator</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>eladmin-generator</name>
+	<description>eladmin-generator</description>
+
+	<properties>
+		<configuration.version>1.10</configuration.version>
+	</properties>
+
+	<dependencies>
+
+		<!--模板引擎-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>${configuration.version}</version>
+		</dependency>
+	</dependencies>
+
+
+</project>
