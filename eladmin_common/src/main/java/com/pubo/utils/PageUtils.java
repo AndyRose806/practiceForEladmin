@@ -10,7 +10,7 @@ import java.util.List;
  * @Author:pubo
  * @Date:2023/12/422:51
  */
-public class PageUtil extends cn.hutool.core.util.PageUtil {
+public class PageUtils extends cn.hutool.core.util.PageUtil {
 
     /**
      * List 分页

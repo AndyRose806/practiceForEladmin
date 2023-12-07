@@ -3,7 +3,7 @@ package com.pubo.security.service;
 import com.pubo.security.config.bean.SecurityProperties;
 import com.pubo.security.security.TokenProvider;
 import com.pubo.security.service.dto.AuthUsrDto;
-import com.pubo.utils.PageUtil;
+import com.pubo.utils.PageUtils;
 import com.pubo.utils.RedisUtils;
 import com.pubo.utils.StringUtils;
 import lombok.AllArgsConstructor;

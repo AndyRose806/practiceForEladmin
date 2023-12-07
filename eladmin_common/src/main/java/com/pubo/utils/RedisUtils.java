@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,11 @@ public class RedisUtils {
 
     public RedisUtils(RedisTemplate<Object, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
+        //创建一个json的序列化对象
+        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        //设置value的序列化方式json
+        this.redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
+
         this.redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         this.redisTemplate.setKeySerializer(new StringRedisSerializer());
         this.redisTemplate.setStringSerializer(new StringRedisSerializer());
