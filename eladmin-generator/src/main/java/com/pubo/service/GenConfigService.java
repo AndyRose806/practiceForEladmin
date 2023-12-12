@@ -2,6 +2,8 @@ package com.pubo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pubo.domain.GenConfig;
+import org.springframework.stereotype.Service;
+
 
 public interface GenConfigService extends IService<GenConfig> {
     /**

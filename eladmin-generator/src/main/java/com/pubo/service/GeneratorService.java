@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pubo.domain.ColumnInfo;
 import com.pubo.domain.GenConfig;
 import com.pubo.utils.PageResult;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

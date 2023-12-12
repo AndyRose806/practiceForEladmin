@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.pubo.security.config.bean.SecurityProperties;
+import com.pubo.security.entity.UsrRoleInfo;
 import com.pubo.security.service.dto.AuthUsrDto;
 import com.pubo.utils.RedisUtils;
 import io.jsonwebtoken.*;
@@ -58,12 +59,15 @@ public class TokenProvider implements InitializingBean {
      * @param authentication /
      * @return /
      */
-    public String createToken(AuthUsrDto authentication) {
+    public String createToken(UsrRoleInfo usrRoleInfo) {
         return jwtBuilder
                 // 加入ID确保生成的 Token 都不一致
                 .setId(IdUtil.simpleUUID())
-                .claim(AUTHORITIES_KEY, authentication.getUsername())
-                .setSubject(authentication.getUsername())
+                .claim(AUTHORITIES_KEY, usrRoleInfo.getUsername())
+                .claim("deptId", usrRoleInfo.getDeptId())
+                .claim("roleName", usrRoleInfo.getName())
+                .claim("data_permission", usrRoleInfo.getDataScope())
+                .setSubject(usrRoleInfo.getUsername())
                 .compact();
     }
 

@@ -2,17 +2,25 @@ package com.pubo.security.rest;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.server.HttpServerRequest;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.pubo.config.RsaProperties;
 import com.pubo.exception.BadRequestException;
 import com.pubo.security.config.bean.LoginCodeEnum;
 import com.pubo.security.config.bean.LoginProperties;
 import com.pubo.security.config.bean.SecurityProperties;
+import com.pubo.security.entity.SysUser;
+import com.pubo.security.entity.UsrRoleInfo;
 import com.pubo.security.security.TokenProvider;
+import com.pubo.security.service.ISysRoleService;
+import com.pubo.security.service.ISysUserService;
 import com.pubo.security.service.OnlineUserService;
 import com.pubo.security.service.dto.AuthUsrDto;
 import com.pubo.security.utils.CryptoUtil;
 import com.pubo.utils.RedisUtils;
 import com.wf.captcha.base.Captcha;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +48,11 @@ public class LoginController {
 
     private final OnlineUserService onlineUserService;
 
+    @Autowired
+    private ISysUserService iSysUserService;
+    @Autowired
+    private ISysRoleService iSysRoleService;
+
     @Resource
     private LoginProperties loginProperties;
 
@@ -51,23 +64,33 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public void login(@Validated @RequestBody AuthUsrDto authUsrDto, HttpServletRequest request){
+    public ResponseEntity<Object> login(@Validated @RequestBody AuthUsrDto authUsrDto, HttpServletRequest request) throws Exception {
         String enPassword = authUsrDto.getPassword();
         // 查询验证码
         String code = (String) redisUtils.get(authUsrDto.getUuid());
+
         if (StringUtils.isBlank(code)) {
             throw new BadRequestException("验证码不存在或已过期");
         }
         if (StringUtils.isBlank(authUsrDto.getCode()) || !authUsrDto.getCode().equalsIgnoreCase(code)) {
             throw new BadRequestException("验证码错误");
         }
-        String dePassword = CryptoUtil.desEncrypt(enPassword, CryptoUtil.KEY, CryptoUtil.IV);
 
-        String token = tokenProvider.createToken(authUsrDto);
+        String dePassword = CryptoUtil.decryptByPrivateKey(RsaProperties.privateKey, enPassword);
+
+
+
+        SysUser user = iSysUserService.checkByUsrNameAndPassword(authUsrDto.getUsername(),dePassword);
+        if (user == null) {
+            throw new BadRequestException("查无此人");
+        }
+        UsrRoleInfo authInfo1 = iSysRoleService.getAuthInfo(user);
+        String token = tokenProvider.createToken(authInfo1);
 
         // 返回 token 与 用户信息
         Map<String, Object> authInfo = new HashMap<String, Object>(2) {{
             put("token", properties.getTokenStartWith() + token);
+            put("user", authInfo1);
         }};
 
         if (loginProperties.isSingleLogin()) {
@@ -76,9 +99,10 @@ public class LoginController {
         }
 
         // 保存在线信息
-        onlineUserService.save(authUsrDto, token, request);
+        onlineUserService.save(authInfo1, token, request);
 
-        System.out.println(""+dePassword);
+        // 返回登录信息
+        return ResponseEntity.ok(authInfo);
     }
 
     @GetMapping ("/code")
@@ -103,6 +127,8 @@ public class LoginController {
         return ResponseEntity.ok(imgResult);
 
     }
+
+
 
 
 }

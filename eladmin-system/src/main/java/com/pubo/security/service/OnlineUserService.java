@@ -1,8 +1,11 @@
 package com.pubo.security.service;
 
+import com.baomidou.mybatisplus.core.toolkit.EncryptUtils;
 import com.pubo.security.config.bean.SecurityProperties;
+import com.pubo.security.entity.UsrRoleInfo;
 import com.pubo.security.security.TokenProvider;
 import com.pubo.security.service.dto.AuthUsrDto;
+import com.pubo.security.utils.CryptoUtil;
 import com.pubo.utils.PageUtils;
 import com.pubo.utils.RedisUtils;
 import com.pubo.utils.StringUtils;
@@ -53,17 +56,13 @@ public class OnlineUserService {
 //        redisUtils.set(loginKey, onlineUserDto, properties.getTokenValidityInSeconds(), TimeUnit.MILLISECONDS);
 //    }
 
-    public void save(AuthUsrDto jwtUserDto, String token, HttpServletRequest request){
-        String dept = jwtUserDto.getUsername();
+    public void save(UsrRoleInfo jwtUserDto, String token, HttpServletRequest request) throws Exception {
+        String dept =  jwtUserDto.getDeptId().toString();
         String ip = StringUtils.getIp(request);
         String browser = StringUtils.getBrowser(request);
         String address = StringUtils.getCityInfo(ip);
-//        OnlineUserDto onlineUserDto = null;
-//        try {
-//            onlineUserDto = new OnlineUserDto(jwtUserDto.getUsername(), jwtUserDto.getUser().getNickName(), dept, browser , ip, address, EncryptUtils.desEncrypt(token), new Date());
-//        } catch (Exception e) {
-//            log.error(e.getMessage(),e);
-//        }
+        String desEncryptToken = CryptoUtil.desEncrypt(token);
+        jwtUserDto.setDesEncryptToken(desEncryptToken);
         String loginKey = tokenProvider.loginKey(token);
         redisUtils.set(loginKey, jwtUserDto, properties.getTokenValidityInSeconds(), TimeUnit.MILLISECONDS);
     }
@@ -135,9 +134,9 @@ public class OnlineUserService {
      * @param key /
      * @return /
      */
-//    public OnlineUserDto getOne(String key) {
-//        return (OnlineUserDto)redisUtils.get(key);
-//    }
+    public UsrRoleInfo getOne(String key) {
+        return (UsrRoleInfo)redisUtils.get(key);
+    }
 
     /**
      * 根据用户名强退用户
