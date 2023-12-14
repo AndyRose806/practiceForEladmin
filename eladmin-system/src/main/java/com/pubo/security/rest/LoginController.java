@@ -17,7 +17,9 @@ import com.pubo.security.service.ISysUserService;
 import com.pubo.security.service.OnlineUserService;
 import com.pubo.security.service.dto.AuthUsrDto;
 import com.pubo.security.utils.CryptoUtil;
+import com.pubo.utils.BaseResponse;
 import com.pubo.utils.RedisUtils;
+import com.pubo.utils.StatusCodeEnum;
 import com.wf.captcha.base.Captcha;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@Validated @RequestBody AuthUsrDto authUsrDto, HttpServletRequest request) throws Exception {
+    public BaseResponse<Object> login(@Validated @RequestBody AuthUsrDto authUsrDto, HttpServletRequest request) throws Exception {
         String enPassword = authUsrDto.getPassword();
         // 查询验证码
         String code = (String) redisUtils.get(authUsrDto.getUuid());
@@ -84,14 +86,11 @@ public class LoginController {
         if (user == null) {
             throw new BadRequestException("查无此人");
         }
-        UsrRoleInfo authInfo1 = iSysRoleService.getAuthInfo(user);
-        String token = tokenProvider.createToken(authInfo1);
-
+        UsrRoleInfo authInfo = iSysRoleService.getAuthInfo(user);
+        String token = tokenProvider.createToken(authInfo);
+        authInfo.setDesEncryptToken(token);
         // 返回 token 与 用户信息
-        Map<String, Object> authInfo = new HashMap<String, Object>(2) {{
-            put("token", properties.getTokenStartWith() + token);
-            put("user", authInfo1);
-        }};
+
 
         if (loginProperties.isSingleLogin()) {
             // 踢掉之前已经登录的token
@@ -99,14 +98,14 @@ public class LoginController {
         }
 
         // 保存在线信息
-        onlineUserService.save(authInfo1, token, request);
+        onlineUserService.save(authInfo, token, request);
 
         // 返回登录信息
-        return ResponseEntity.ok(authInfo);
+        return new BaseResponse(StatusCodeEnum.SUCCESS, authInfo);
     }
 
     @GetMapping ("/code")
-    public ResponseEntity<Object> getCode(){
+    public BaseResponse<Map<String, Object>> getCode(){
         // 获取运算的结果
         Captcha captcha = loginProperties.getCaptcha();
         String uuid = properties.getCodeKey() + IdUtil.simpleUUID();
@@ -124,7 +123,7 @@ public class LoginController {
             put("img", captcha.toBase64());
             put("uuid", uuid);
         }};
-        return ResponseEntity.ok(imgResult);
+        return new BaseResponse(StatusCodeEnum.SUCCESS, imgResult);
 
     }
 

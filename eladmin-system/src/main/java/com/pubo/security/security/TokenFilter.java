@@ -13,6 +13,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Objects;
 
 @WebFilter(filterName = "TokenFilter",urlPatterns = {"/api/*", "/app/*"})
 public class TokenFilter extends GenericFilter {
@@ -20,6 +21,8 @@ public class TokenFilter extends GenericFilter {
     private final TokenProvider tokenProvider;
     private final SecurityProperties properties;
     private final OnlineUserService onlineUserService;
+
+
 
 
     /**
@@ -37,9 +40,11 @@ public class TokenFilter extends GenericFilter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String token = resolveToken(request);
+        String requestURI = request.getRequestURI();
 
         // 对于 Token 为空的不需要去查 Redis
-        if (StrUtil.isNotBlank(token)) {
+        if (StrUtil.isNotBlank(token)  ) {
+            System.out.println("request"+requestURI);
             UsrRoleInfo usrRoleInfo = new UsrRoleInfo();
             boolean cleanUserCache = false;
             try {

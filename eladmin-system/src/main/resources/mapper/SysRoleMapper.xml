@@ -4,7 +4,7 @@
 
     <select id="getAuthInfo" resultType="com.pubo.security.entity.UsrRoleInfo"
             parameterType="com.pubo.security.entity.SysUser">
-        select su.username, su.dept_id, sr.name, sr.data_scope  from sys_user as su,sys_users_roles as sur,sys_role as sr
+        select su.username, su.dept_id, sr.name, sr.data_scope,su.gender as sex  from sys_user as su,sys_users_roles as sur,sys_role as sr
                  where #{user.userId} = su.user_id and su.user_id = sur.user_id and sr.role_id = sur.role_id
     </select>
 </mapper>

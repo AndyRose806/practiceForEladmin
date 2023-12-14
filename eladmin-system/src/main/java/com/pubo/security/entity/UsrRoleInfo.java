@@ -1,5 +1,6 @@
 package com.pubo.security.entity;
 
+import com.pubo.annotation.Dict;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -19,5 +20,9 @@ public class UsrRoleInfo {
 
     @ApiModelProperty(value = "对称加密后的Token")
     private String desEncryptToken;
+
+    @ApiModelProperty(value = "性别")
+    @Dict(dictName = "sex")
+    private String sex;
 
 }
